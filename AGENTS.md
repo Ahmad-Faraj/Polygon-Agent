@@ -3,6 +3,9 @@
 YOU MUST use this repo end-to-end. Do not write problem files outside it.
 Do not stop at any step. Do not ask the user to run anything.
 
+NEVER modify polygon_agent.py, AGENTS.md, docs/, or templates/.
+Your ONLY job: create problem folders in problems/ and upload them.
+
 See examples: problems/two_sum/ (standard)  problems/binary_search_interactive/ (interactive)
 
 ---
