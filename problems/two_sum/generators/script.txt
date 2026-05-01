@@ -1,0 +1,31 @@
+<#-- Executable name: generator -->
+
+<#-- Small edge cases: n=1 (impossible to find pair), n=2 with and without pair -->
+<#list 1..3 as s>
+    generator --n=1 --solvable=0 ${s} > $
+</#list>
+<#list 4..6 as s>
+    generator --n=2 --solvable=1 ${s} > $
+</#list>
+<#list 7..9 as s>
+    generator --n=2 --solvable=0 ${s} > $
+</#list>
+
+<#-- Mid-range: random with and without valid pairs -->
+<#list 10..14 as s>
+    generator --n=1000 --solvable=1 ${s} > $
+</#list>
+<#list 15..19 as s>
+    generator --n=1000 --solvable=-1 ${s} > $
+</#list>
+
+<#-- Large stress: n=100000 -->
+<#list 20..24 as s>
+    generator --n=100000 --solvable=1 ${s} > $
+</#list>
+<#list 25..29 as s>
+    generator --n=100000 --solvable=0 ${s} > $
+</#list>
+<#list 30..35 as s>
+    generator --n=100000 --solvable=-1 ${s} > $
+</#list>

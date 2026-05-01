@@ -1,0 +1,32 @@
+{
+  "name": "two-sum",
+  "title": "Two Sum",
+  "author": "",
+  "legend": "Given an array of integers and a target value, find two distinct indices whose elements sum to the target.",
+  "input": "First line: n and target. Second line: n integers.",
+  "output": "Two 1-indexed indices i j such that a_i + a_j = target, or -1 -1 if none.",
+  "notes": "",
+  "constraints": "1 <= n <= 10^5, -10^9 <= a_i <= 10^9, -10^9 <= target <= 10^9",
+  "solution_idea": "Hash map: for each element a_i check if target - a_i is already in the map.",
+  "time_limit_ms": 2000,
+  "memory_limit_mb": 256,
+  "interactive": false,
+  "multitest": false,
+  "samples": [
+    {
+      "input": "4 6\n1 2 3 4",
+      "output": "2 4"
+    },
+    {
+      "input": "3 10\n1 2 3",
+      "output": "-1 -1"
+    }
+  ],
+  "tags": [
+    "data-structures",
+    "two-pointers",
+    "hash-map"
+  ],
+  "brute_tag": "TL",
+  "statement_language": "english"
+}

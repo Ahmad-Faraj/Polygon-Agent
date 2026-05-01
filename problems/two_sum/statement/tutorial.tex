@@ -1,0 +1,24 @@
+\textbf{Key Observations}
+
+\begin{enumerate}
+    \item For each element $a_i$, the only value that could pair with it to reach $\text{target}$ is $\text{target} - a_i$.
+    \item Therefore, the problem reduces to: for each index $i$, check whether $\text{target} - a_i$ has already been seen at some earlier index $j < i$.
+    \item A hash map from value to index supports this lookup in $O(1)$ expected time.
+\end{enumerate}
+
+\textbf{Solution Approach}
+
+Iterate through the array from left to right, maintaining a hash map \texttt{seen} that maps each visited value to its 1-indexed position. For each element $a_i$:
+\begin{enumerate}
+    \item Compute the complement $c = \text{target} - a_i$.
+    \item If $c$ exists in \texttt{seen}, output $\texttt{seen}[c]$ and $i$, then stop.
+    \item Otherwise, insert $a_i \mapsto i$ into \texttt{seen}.
+\end{enumerate}
+If the loop ends without finding a pair, output \t{-1 -1}.
+
+\textbf{Complexity Analysis}
+
+\begin{itemize}
+    \item \textbf{Time}: $O(n)$ expected --- one pass, each hash map operation is $O(1)$ expected.
+    \item \textbf{Space}: $O(n)$ --- the hash map stores at most $n$ entries.
+\end{itemize}

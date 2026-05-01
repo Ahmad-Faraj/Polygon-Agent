@@ -20,6 +20,8 @@ REQUIRED_FILES = [
     "solutions/brute.cpp",
 ]
 
+INTERACTOR_FILE = "interactor.cpp"
+
 # ── helpers ──────────────────────────────────────────────────────────
 
 def load_env():
@@ -80,6 +82,12 @@ def read_state(d):
 def write_state(d, state):
     (d / "state.json").write_text(json.dumps(state, indent=2), encoding="utf-8")
 
+def required_files(spec):
+    files = list(REQUIRED_FILES)
+    if spec.get("interactive"):
+        files.append(INTERACTOR_FILE)
+    return files
+
 def scaffold(local_name, spec):
     PROBLEMS_ROOT.mkdir(parents=True, exist_ok=True)
     d = PROBLEMS_ROOT / local_name
@@ -90,8 +98,12 @@ def scaffold(local_name, spec):
     return d
 
 def validate_files(d):
+    spec = {}
+    sp = d / "spec.json"
+    if sp.exists():
+        spec = json.loads(sp.read_text(encoding="utf-8", errors="ignore"))
     errors = []
-    for rel in REQUIRED_FILES:
+    for rel in required_files(spec):
         p = d / rel
         if not p.exists():
             errors.append(f"Missing:     {rel}"); continue
@@ -106,13 +118,14 @@ def validate_files(d):
 
 def upload_problem(problem_dir, spec, key, secret):
     samples   = spec.get("samples", [])
-    brute_tag = spec.get("brute_tag", "OK")  # OK or TL — set in spec.json
+    brute_tag   = spec.get("brute_tag", "OK")
+    interactive = spec.get("interactive", False)
 
     # 1. Create
     print("Creating problem on Polygon...")
     r = api_call("problem.create", {"name": spec["name"]}, key, secret)
     pid = int(r["id"])
-    print(f"  Problem ID: {pid}")
+    print(f"  Problem ID: {pid}  interactive: {interactive}")
 
     # 2. Info
     print("Setting limits...")
@@ -120,7 +133,7 @@ def upload_problem(problem_dir, spec, key, secret):
         "problemId":   pid,
         "timeLimit":   spec["time_limit_ms"],
         "memoryLimit": spec["memory_limit_mb"],
-        "interactive": False,
+        "interactive": interactive,
         "inputFile":   "",
         "outputFile":  "",
     }, key, secret)
@@ -144,11 +157,16 @@ def upload_problem(problem_dir, spec, key, secret):
         "tutorial": read_text(problem_dir / "statement/tutorial.tex"),
     }, key, secret)
 
-    # 5. Source files (validator, checker, generator)
+    # 5. Source files (validator, checker, generator; + interactor if interactive)
     print("Uploading source files...")
-    for fname, fpath in [("validator.cpp", "validator.cpp"),
-                         ("checker.cpp",   "checker.cpp"),
-                         ("generator.cpp", "generators/generator.cpp")]:
+    source_files = [
+        ("validator.cpp", "validator.cpp"),
+        ("checker.cpp",   "checker.cpp"),
+        ("generator.cpp", "generators/generator.cpp"),
+    ]
+    if interactive:
+        source_files.append(("interactor.cpp", INTERACTOR_FILE))
+    for fname, fpath in source_files:
         api_call("problem.saveFile", {
             "problemId": pid, "type": "source",
             "name": fname, "file": read_text(problem_dir / fpath),
@@ -158,6 +176,9 @@ def upload_problem(problem_dir, spec, key, secret):
     print("Linking validator and checker...")
     api_call("problem.setValidator", {"problemId": pid, "validator": "validator.cpp"}, key, secret)
     api_call("problem.setChecker",   {"problemId": pid, "checker":   "checker.cpp"},   key, secret)
+    if interactive:
+        print("Linking interactor...")
+        api_call("problem.setInteractor", {"problemId": pid, "interactor": "interactor.cpp"}, key, secret)
 
     # 7. Solutions: acc (MA), java (OK), brute (OK or TL from spec)
     print(f"Uploading solutions: acc=MA  java=OK  brute={brute_tag}...")
@@ -250,6 +271,7 @@ def create_cmd(args):
         "solution_idea":    args.solution_idea   or "",
         "time_limit_ms":    args.time_limit,
         "memory_limit_mb":  args.memory_limit,
+        "interactive":     args.interactive,
         "multitest":        args.multitest,
         "samples":          json.loads(args.samples) if args.samples else [],
         "tags":             tags,
@@ -260,22 +282,30 @@ def create_cmd(args):
         d = scaffold(args.name, spec)
     except RuntimeError as e:
         print(f"Error: {e}"); return 1
-    print(f"Created: {d}")
+    kind = "interactive " if spec["interactive"] else ""
+    print(f"Created {kind}problem: {d}")
+    if spec["interactive"]:
+        print("  Remember to fill interactor.cpp (13 files total)")
     return 0
 
 def check_cmd(args):
     d = PROBLEMS_ROOT / args.name
     if not d.exists():
         print(f"Error: not found: {d}"); return 1
+    spec  = {}
+    sp = d / "spec.json"
+    if sp.exists():
+        spec = json.loads(sp.read_text(encoding="utf-8"))
     errs  = validate_files(d)
     state = read_state(d)
     if errs:
         print(f"Not ready ({len(errs)} issue(s)):")
         for e in errs: print(f"  {e}")
         return 1
-    pid     = state.get("problem_id")
-    pid_str = f"  (Polygon ID: {pid})" if pid else ""
-    print(f"OK: all {len(REQUIRED_FILES)} files complete.{pid_str}")
+    pid        = state.get("problem_id")
+    pid_str    = f"  (Polygon ID: {pid})" if pid else ""
+    n_required = len(required_files(spec))
+    print(f"OK: all {n_required} files complete.{pid_str}")
     return 0
 
 def upload_cmd(args):
@@ -321,8 +351,8 @@ def list_cmd(args):
                        if d.is_dir() and (d / "spec.json").exists()])
     if not problems:
         print("No problems in problems/"); return 0
-    fmt = "{:<3} {:<28} {:<18} {:<12} {}"
-    print(fmt.format("", "Name", "Stage", "Polygon ID", "Tags"))
+    fmt = "{:<3} {:<28} {:<5} {:<16} {:<12} {}"
+    print(fmt.format("", "Name", "Type", "Stage", "Polygon ID", "Tags"))
     print("-" * 75)
     for prob_dir in problems:
         spec  = json.loads((prob_dir / "spec.json").read_text(encoding="utf-8"))
@@ -330,10 +360,11 @@ def list_cmd(args):
         name  = prob_dir.name
         stage = state.get("stage", "unknown")
         pid   = str(state.get("problem_id", "-"))
-        tags  = ",".join(spec.get("tags", []))[:28]
+        kind  = "I/A" if spec.get("interactive") else "std"
+        tags  = ",".join(spec.get("tags", []))[:24]
         errs  = validate_files(prob_dir)
         mark  = "OK" if not errs else "--"
-        print(fmt.format(mark, name, stage, pid, tags))
+        print(fmt.format(mark, name, kind, stage, pid, tags))
     return 0
 
 def open_cmd(args):
@@ -371,6 +402,7 @@ def main():
     c.add_argument("--solution-idea", dest="solution_idea")
     c.add_argument("--time-limit",    dest="time_limit",   type=int, default=2000)
     c.add_argument("--memory-limit",  dest="memory_limit", type=int, default=256)
+    c.add_argument("--interactive",   action="store_true", help="Interactive problem (adds interactor.cpp)")
     c.add_argument("--multitest",     action="store_true")
     c.add_argument("--samples")
     c.add_argument("--tags",          help="Comma-separated Codeforces tags")

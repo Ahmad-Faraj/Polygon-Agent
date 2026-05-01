@@ -1,0 +1,11 @@
+Suppose $n = 10$ and the hidden value is $x = 7$.
+
+A possible interaction:
+\begin{itemize}
+    \item You print $5$. Judge responds \t{greater} (since $7 > 5$). Range narrows to $[6, 10]$.
+    \item You print $8$. Judge responds \t{less} (since $7 < 8$). Range narrows to $[6, 7]$.
+    \item You print $6$. Judge responds \t{greater} (since $7 > 6$). Range narrows to $[7, 7]$.
+    \item You print $7$. Judge responds \t{equal}. Interaction ends.
+\end{itemize}
+
+Binary search on $[1, 10^9]$ requires at most $\lceil \log_2(10^9) \rceil = 30$ queries.

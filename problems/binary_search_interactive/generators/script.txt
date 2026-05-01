@@ -1,0 +1,31 @@
+<#-- Executable name: generator -->
+<#-- No hand-made samples for interactive (samples list is empty) -->
+<#-- All tests generated here -->
+
+<#-- Edge: x=1 (minimum) -->
+<#list 1..2 as s>
+    generator --n=1000000000 --secret=1 ${s} > $
+</#list>
+
+<#-- Edge: x=n (maximum) -->
+<#list 3..4 as s>
+    generator --n=1000000000 --secret=1000000000 ${s} > $
+</#list>
+
+<#-- Small n -->
+<#list 5..8 as s>
+    generator --n=1 --secret=1 ${s} > $
+</#list>
+<#list 9..12 as s>
+    generator --n=2 ${s} > $
+</#list>
+
+<#-- Mid range -->
+<#list 13..18 as s>
+    generator --n=1000 ${s} > $
+</#list>
+
+<#-- Large: n=10^9, random secret -->
+<#list 19..28 as s>
+    generator --n=1000000000 ${s} > $
+</#list>

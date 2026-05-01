@@ -1,9 +1,15 @@
-# Credentials — never commit these
+# Credentials -- never commit these
 .env
 .env.local
 
-# Generated problems — personal/private work, not part of the template
+# User problems -- private work, not part of the template
+# Example problems below are explicitly tracked as reference
 problems/*/
+!problems/.gitkeep
+!problems/two_sum/
+!problems/two_sum/**
+!problems/binary_search_interactive/
+!problems/binary_search_interactive/**
 
 # Python cache
 __pycache__/

@@ -1,0 +1,19 @@
+{
+  "name": "binary-search-interactive",
+  "title": "Guess the Number",
+  "author": "",
+  "legend": "A hidden integer x is chosen in [1, n]. Ask up to 30 queries.",
+  "input": "Single line: integer n.",
+  "output": "Interactive. Print queries. When found, print ! x.",
+  "notes": "",
+  "constraints": "1 <= n <= 10^9. At most 30 queries.",
+  "solution_idea": "Binary search lo=1 hi=n. Query mid=(lo+hi)/2.",
+  "time_limit_ms": 2000,
+  "memory_limit_mb": 256,
+  "interactive": true,
+  "multitest": false,
+  "samples": [],
+  "tags": ["binary-search", "interactive"],
+  "brute_tag": "OK",
+  "statement_language": "english"
+}

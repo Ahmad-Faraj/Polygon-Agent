@@ -1,0 +1,30 @@
+\textbf{Key Observations}
+
+\begin{enumerate}
+    \item After each query $m$, the response eliminates half the remaining range:
+          \t{less} gives $x \in [lo, m-1]$, \t{greater} gives $x \in [m+1, hi]$.
+    \item $\lceil \log_2(10^9) \rceil = 30$, so binary search always terminates within $30$ queries.
+\end{enumerate}
+
+\textbf{Solution Approach}
+
+Maintain $lo = 1$, $hi = n$. While $lo < hi$:
+\begin{enumerate}
+    \item Let $mid = lo + \lfloor (hi - lo) / 2 \rfloor$.
+    \item Print $mid$ and flush.
+    \item Read response:
+    \begin{itemize}
+        \item \t{less}: set $hi = mid - 1$.
+        \item \t{greater}: set $lo = mid + 1$.
+        \item \t{equal}: answer found; print \t{! mid} and exit.
+    \end{itemize}
+\end{enumerate}
+When $lo = hi$, print \t{! lo}.
+
+\textbf{Complexity Analysis}
+
+\begin{itemize}
+    \item \textbf{Queries}: $O(\log n) \leq 30$.
+    \item \textbf{Time}: $O(\log n)$.
+    \item \textbf{Space}: $O(1)$.
+\end{itemize}
