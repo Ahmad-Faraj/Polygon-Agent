@@ -181,16 +181,17 @@ def upload_problem(problem_dir, spec, key, secret):
         api_call("problem.setInteractor", {"problemId": pid, "interactor": "interactor.cpp"}, key, secret)
 
     # 7. Solutions: acc (MA), java (OK), brute (OK or TL from spec)
-    print(f"Uploading solutions: acc=MA  java=OK  brute={brute_tag}...")
+    print(f"Uploading solutions: acc=MA  java={java_tag}  brute={brute_tag}...")
     api_call("problem.saveSolution", {
         "problemId": pid, "name": "acc.cpp",
         "file": read_text(problem_dir / "solutions/acc.cpp"),
         "tag": "MA", "sourceType": "cpp.g++17",
     }, key, secret)
+    java_tag = spec.get("java_tag", "OK")
     api_call("problem.saveSolution", {
         "problemId": pid, "name": "java.java",
         "file": read_text(problem_dir / "solutions/java.java"),
-        "tag": "OK", "sourceType": "java21",
+        "tag": java_tag, "sourceType": "java21",
     }, key, secret)
     api_call("problem.saveSolution", {
         "problemId": pid, "name": "brute.cpp",
