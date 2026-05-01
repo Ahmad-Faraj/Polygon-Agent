@@ -270,6 +270,7 @@ def lint_files(d):
         (bs + 'documentclass',  'documentclass not allowed'),
         (bs + 'newcommand',     'newcommand not allowed -- no custom macros'),
         (bs + 'section{',       'section not allowed -- use textbf{} for headings'),
+        (bs + '[',              'display math not supported in HTML -- use $$ instead of ' + bs + '[ ' + bs + ']'),
         (bs + 'begin{verbatim}','verbatim not allowed -- use texttt{} or t{}'),
     ]
     for rel in statement_files:
