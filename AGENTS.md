@@ -30,7 +30,7 @@ tags: dp, greedy, graphs, trees, binary-search, math, implementation,
 
 Fill every <<<PF_PLACEHOLDER>>>. Read the doc BEFORE writing each file.
 
-### statement/legend.tex   READ docs/latex.md
+### statement/legend.tex   READ docs/statements-tex-manual.md  (PRIMARY SOURCE)
 
 Short story, 3-5 sentences. WHAT to compute, not HOW.
 
@@ -63,24 +63,24 @@ Rules -- violations BREAK Polygon:
   Em-dash: ---  (three dashes, never - or --)
   NEVER: \usepackage  \begin{document}  \documentclass  \newcommand  \section
 
-### statement/input.tex   READ docs/latex.md
+### statement/input.tex   READ docs/statements-tex-manual.md
 
   The first line contains $t$ $(1 \leq t \leq 10^4)$ --- the number of test cases.
   Each test case: $n$ $(1 \leq n \leq 2 \times 10^5)$.
   Integers $a_1, \ldots, a_n$ $(-10^9 \leq a_i \leq 10^9)$.
   Sum of $n$ over all test cases does not exceed $2 \times 10^5$.
 
-### statement/output.tex   READ docs/latex.md
+### statement/output.tex   READ docs/statements-tex-manual.md
 
   Print a single integer --- the answer.
   YES/NO add: You may print each letter in any case (\t{YES}, \t{Yes} are accepted).
 
-### statement/notes.tex   READ docs/latex.md
+### statement/notes.tex   READ docs/statements-tex-manual.md
 
   In the first example, $n=4$. Pair $(2,4)$ gives $a_2+a_4=2+4=6=T$.
   Must be non-empty.
 
-### statement/tutorial.tex   READ docs/latex.md
+### statement/tutorial.tex   READ docs/statements-tex-manual.md
 
 ECPC mandatory -- three sections:
   \textbf{Key Observations}
@@ -182,7 +182,8 @@ Must print: OK: all N files complete.
 
 ## Docs (read before every file)
 
-  docs/latex.md        Polygon LaTeX rules + valid examples
+  docs/statements-tex-manual.md  AUTHORITATIVE Polygon TeX manual (read first)
+  docs/latex.md                  LaTeX rules + valid examples from real problems
   docs/testlib.md      testlib API: validator/checker/generator
   docs/interactive.md  Interactive problem guide
   docs/polygon-api.md  API endpoints + solution tags

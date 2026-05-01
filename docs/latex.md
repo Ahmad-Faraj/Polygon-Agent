@@ -1,5 +1,9 @@
 # Polygon LaTeX Rules
 
+> **PRIMARY SOURCE**: docs/statements-tex-manual.md
+> Read the full official manual before writing any statement file.
+> This file provides quick examples; the manual is authoritative.
+
 Reference: https://polygon.codeforces.com/docs/statements-tex-manual
 Polygon renders its own LaTeX dialect. Violations cause compile errors or broken PDF.
 
