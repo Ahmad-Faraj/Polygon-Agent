@@ -30,70 +30,14 @@ tags: dp, greedy, graphs, trees, binary-search, math, implementation,
 
 Fill every <<<PF_PLACEHOLDER>>>. Read the doc BEFORE writing each file.
 
-### statement/legend.tex   READ docs/statements-tex-manual.md  (PRIMARY SOURCE)
+### statement/*.tex   READ docs/statements-tex-manual.md (PRIMARY SOURCE)
 
-Short story, 3-5 sentences. WHAT to compute, not HOW.
+For ALL five statement files (legend.tex, input.tex, output.tex, notes.tex, tutorial.tex):
 
-VALID POLYGON LATEX -- copy this style exactly:
-
-  $Faraj$ has an array $a_1, a_2, \ldots, a_n$ and a target $T$.
-  He wants two indices $i \neq j$ such that $a_i + a_j = T$.
-  Find such a pair or report that none exists.
-
-More valid patterns (from real problems):
-  \bf{(1,1)}                bold coordinate
-  $n \times m$ grid
-  $(1 \leq t \leq 10)$   inline constraint
-  $a_1, a_2, \ldots, a_n$
-  $a_1 + a_2 + \cdots + a_n$
-  $\cdots$  $\blacksquare$  \large{text}
-  \begin{itemize}
-    \item Ladder from \bf{(3 $\longrightarrow$ 12)}.
-  \end{itemize}
-  \begin{enumerate}
-    \item We start at cell \bf{(1)}.
-  \end{enumerate}
-  \begin{center} centered block \end{center}
-
-Rules -- violations BREAK Polygon:
-  ALL variables in math mode: $n$  $a_i$  $k$  (never plain text)
-  Symbols: \leq  \geq  \neq  \times  \ldots  \cdots  (never <= >= ...)
-  Bold: \textbf{text} or \bf{text}    Italic: \textit{text}
-  Literal tokens: \t{YES}  \t{NO}  \t{-1}  \t{-1 -1}
-  Em-dash: ---  (three dashes, never - or --)
-  NEVER: \usepackage  \begin{document}  \documentclass  \newcommand  \section
-
-### statement/input.tex   READ docs/statements-tex-manual.md
-
-  The first line contains $t$ $(1 \leq t \leq 10^4)$ --- the number of test cases.
-  Each test case: $n$ $(1 \leq n \leq 2 \times 10^5)$.
-  Integers $a_1, \ldots, a_n$ $(-10^9 \leq a_i \leq 10^9)$.
-  Sum of $n$ over all test cases does not exceed $2 \times 10^5$.
-
-### statement/output.tex   READ docs/statements-tex-manual.md
-
-  Print a single integer --- the answer.
-  YES/NO add: You may print each letter in any case (\t{YES}, \t{Yes} are accepted).
-
-### statement/notes.tex   READ docs/statements-tex-manual.md
-
-  In the first example, $n=4$. Pair $(2,4)$ gives $a_2+a_4=2+4=6=T$.
-  Must be non-empty.
-
-### statement/tutorial.tex   READ docs/statements-tex-manual.md
-
-ECPC mandatory -- three sections:
-  \textbf{Key Observations}
-  \begin{enumerate}
-      \item Observation with proof.
-  \end{enumerate}
-  \textbf{Solution Approach}
-  Algorithm step by step.
-  \textbf{Complexity Analysis}
-  \begin{itemize}
-      \item \textbf{Time}: $O(n \log n)$ --- reason.
-      \item \textbf{Space}: $O(n)$ --- reason.
-  \end{itemize}
+1. Open docs/statements-tex-manual.md and read it completely.
+2. Use ONLY commands from the supported HTML list in that file.
+3. Follow the 11 strict rules at the bottom of that file.
+4. Do not invent LaTeX commands not listed in that file.
 
 ### validator.cpp   READ docs/testlib.md + START FROM templates/problem/validator.cpp
 
@@ -182,8 +126,7 @@ Must print: OK: all N files complete.
 
 ## Docs (read before every file)
 
-  docs/statements-tex-manual.md  AUTHORITATIVE Polygon TeX manual (read first)
-  docs/latex.md                  LaTeX rules + valid examples from real problems
+  docs/statements-tex-manual.md  AUTHORITATIVE Polygon TeX manual (ONLY LaTeX reference)
   docs/testlib.md      testlib API: validator/checker/generator
   docs/interactive.md  Interactive problem guide
   docs/polygon-api.md  API endpoints + solution tags
