@@ -255,6 +255,50 @@ def upload_problem(problem_dir, spec, key, secret):
     print("  Timed out.")
     return pid, "UNKNOWN"
 
+
+def lint_files(d):
+    import re
+    issues = []
+    bs = chr(92)
+    statement_files = [
+        'statement/legend.tex', 'statement/input.tex', 'statement/output.tex',
+        'statement/notes.tex', 'statement/tutorial.tex',
+    ]
+    forbidden = [
+        (bs + 'usepackage',     'usepackage not allowed -- Polygon manages packages'),
+        (bs + 'begin{document}','begin{document} not allowed -- Polygon wraps this'),
+        (bs + 'documentclass',  'documentclass not allowed'),
+        (bs + 'newcommand',     'newcommand not allowed -- no custom macros'),
+        (bs + 'section{',       'section not allowed -- use textbf{} for headings'),
+        (bs + 'begin{verbatim}','verbatim not allowed -- use texttt{} or t{}'),
+    ]
+    for rel in statement_files:
+        p = d / rel
+        if not p.exists(): continue
+        txt = p.read_text(encoding='utf-8', errors='ignore')
+        for token, msg in forbidden:
+            if token in txt:
+                issues.append(rel + ': ' + msg)
+        no_math = re.sub(r'\$[^$]+\$', '', txt)
+        for op in (' <= ', ' >= ', ' != '):
+            if op in no_math:
+                issues.append(rel + ': bare ' + op.strip() + ' found -- use leq/geq/neq (see docs/latex.md)')
+    return issues
+
+
+def lint_cmd(args):
+    d = PROBLEMS_ROOT / args.name
+    if not d.exists():
+        print('Error: not found: ' + str(d)); return 1
+    issues = lint_files(d)
+    if issues:
+        print('Lint issues (' + str(len(issues)) + '):')
+        for issue in issues: print('  ' + issue)
+        return 1
+    print('Lint OK: no LaTeX issues found.')
+    return 0
+
+
 # -- subcommands --
 
 def create_cmd(args):
@@ -414,6 +458,9 @@ def main():
     u.add_argument("name")
     u.add_argument("--force", action="store_true", help="Re-upload even if already uploaded")
 
+    lnt = sub.add_parser("lint", help="Scan LaTeX for forbidden commands")
+    lnt.add_argument("name")
+
     sub.add_parser("list",  help="List all local problems with status")
 
     o = sub.add_parser("open",  help="Open problem on Polygon in browser")
@@ -422,6 +469,7 @@ def main():
     args = p.parse_args()
     return {
         "create": create_cmd,
+        "lint":   lint_cmd,
         "check":  check_cmd,
         "upload": upload_cmd,
         "list":   list_cmd,

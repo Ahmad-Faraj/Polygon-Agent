@@ -1,89 +1,139 @@
 # Agent Instructions -- polygon-agent
 
-This repo creates ECPC 2026 compliant Codeforces Polygon problems end-to-end.
-You receive a problem description and deploy it to Polygon with zero manual steps.
+YOU MUST use this repo end-to-end. Do not write problem files outside it.
+Do not stop at any step. Do not ask the user to run anything.
 
-## Your 4-step flow (execute all, no stopping)
+See examples: problems/two_sum/ (standard)  problems/binary_search_interactive/ (interactive)
 
-  1. python polygon_agent.py create <name> --legend "..." --input "..." --output "..."
-       --constraints "..." --solution-idea "..." --time-limit <ms> --memory-limit <mb>
-       --tags "dp,greedy"  [--interactive]  [--multitest]  [--samples "[{...}]"]
+---
 
-  2. Write all required files in problems/<name>/  (fill every <<<PF_PLACEHOLDER>>>)
-     Standard: 12 files.  Interactive (--interactive flag): 13 files (+ interactor.cpp)
+## STEP 1 -- SCAFFOLD
 
-  3. python polygon_agent.py check <name>   # must print OK
+  python polygon_agent.py create <name>
+    --legend "..." --input "..." --output "..."
+    --constraints "..." --solution-idea "..."
+    --time-limit <ms> --memory-limit <mb>
+    --tags "tag1,tag2"
+    [--interactive] [--multitest]
 
-  4. python polygon_agent.py upload <name>  # deploys to Polygon
+name: snake_case.
+tags: dp, greedy, graphs, trees, binary-search, math, implementation,
+  sortings, two-pointers, data-structures, constructive-algorithms,
+  dfs-and-similar, bitmasks
 
-Other commands: list (show type/stage/ID), open <name> (browser), upload --force
+---
 
-## Required files
+## STEP 2 -- WRITE ALL FILES
 
-  problems/<name>/
-    spec.json               read this first -- all problem metadata
-    state.json              stage: scaffolded / uploaded / upload_failed
-    statement/
-      legend.tex            LaTeX story, 3-5 sentences, hide algorithm
-      input.tex             input format + constraints in math mode
-      output.tex            output format
-      notes.tex             sample explanations (non-empty)
-      tutorial.tex          editorial: Observations + Approach + Complexity
-    validator.cpp           testlib strict input validator
-    checker.cpp             testlib output checker
-    generators/
-      generator.cpp         testlib generator -- fill Generate_tests() only
-      script.txt            FreeMarker script -- Polygon generates tests N+1..30
-    solutions/
-      acc.cpp               C++17 main solution (tag MA)
-      java.java             Java solution, class Main, StreamTokenizer (tag OK)
-      brute.cpp             naive correct solution (tag OK or TL from spec.brute_tag)
-    interactor.cpp          ONLY for interactive problems (tag set by --interactive)
+Fill every <<<PF_PLACEHOLDER>>>. Read the doc BEFORE writing each file.
 
-## LaTeX rules (READ docs/latex.md for full details)
+### statement/legend.tex   READ docs/latex.md
 
-CRITICAL -- these mistakes cause Polygon compile errors or broken rendering:
+Short story, 3-5 sentences. WHAT to compute, not HOW.
 
-  ALL variables must be in math mode: $ $ $  (never plain n or a_i)
-  Use \leq \geq \neq \times \ldots  (never <=, >=, x, ...)
-  Use \t{YES} \t{NO} \t{-1}  for literal tokens
-  NEVER write \usepackage or \begin{document} -- Polygon adds these
-  NEVER write \newcommand or \section -- use \textbf{} for headings
-  Constraints: ( \leq n \leq 10^5$) with --- for em-dash
+VALID POLYGON LATEX -- copy this style exactly:
 
-## Writing each file
+  $Faraj$ has an array $a_1, a_2, \ldots, a_n$ and a target $T$.
+  He wants two indices $i \neq j$ such that $a_i + a_j = T$.
+  Find such a pair or report that none exists.
 
-legend.tex  -- Short story (3-5 sentences). WHAT not HOW.
-input.tex   -- Line-by-line with constraints:  \leq n \leq 2 \times 10^5$.
-              If multitest: first line $ ( \leq t \leq ...$), then one test.
-output.tex  -- Exactly what to print. YES/NO: state case-insensitive.
-notes.tex   -- Explain each sample: In the first example... Use math mode. Non-empty.
-tutorial.tex (ECPC mandatory):
-  1. Key Observations  2. Solution Approach  3. Complexity Analysis
+More valid patterns (from real problems):
+  \bf{(1,1)}                bold coordinate
+  $n \times m$ grid
+  $(1 \leq t \leq 10)$   inline constraint
+  $a_1, a_2, \ldots, a_n$
+  $a_1 + a_2 + \cdots + a_n$
+  $\cdots$  $\blacksquare$  \large{text}
+  \begin{itemize}
+    \item Ladder from \bf{(3 $\longrightarrow$ 12)}.
+  \end{itemize}
+  \begin{enumerate}
+    \item We start at cell \bf{(1)}.
+  \end{enumerate}
+  \begin{center} centered block \end{center}
 
-validator.cpp:
-  registerValidation(argc, argv) first.
-  inf.readInt(min,max,"name") + readSpace + readEoln after each line + readEof at end.
-  Multitest: setTestCase(tc) in loop. ensuref() for sum constraints.
-  See docs/testlib.md for full API.
+Rules -- violations BREAK Polygon:
+  ALL variables in math mode: $n$  $a_i$  $k$  (never plain text)
+  Symbols: \leq  \geq  \neq  \times  \ldots  \cdots  (never <= >= ...)
+  Bold: \textbf{text} or \bf{text}    Italic: \textit{text}
+  Literal tokens: \t{YES}  \t{NO}  \t{-1}  \t{-1 -1}
+  Em-dash: ---  (three dashes, never - or --)
+  NEVER: \usepackage  \begin{document}  \documentclass  \newcommand  \section
 
-checker.cpp:
-  setName("...") MUST be first call. registerTestlibCmd next.
-  quitf(_ok/_wa/_fail) with messages. See docs/testlib.md.
+### statement/input.tex   READ docs/latex.md
 
-generator.cpp -- fill ONLY Generate_tests():
+  The first line contains $t$ $(1 \leq t \leq 10^4)$ --- the number of test cases.
+  Each test case: $n$ $(1 \leq n \leq 2 \times 10^5)$.
+  Integers $a_1, \ldots, a_n$ $(-10^9 \leq a_i \leq 10^9)$.
+  Sum of $n$ over all test cases does not exceed $2 \times 10^5$.
+
+### statement/output.tex   READ docs/latex.md
+
+  Print a single integer --- the answer.
+  YES/NO add: You may print each letter in any case (\t{YES}, \t{Yes} are accepted).
+
+### statement/notes.tex   READ docs/latex.md
+
+  In the first example, $n=4$. Pair $(2,4)$ gives $a_2+a_4=2+4=6=T$.
+  Must be non-empty.
+
+### statement/tutorial.tex   READ docs/latex.md
+
+ECPC mandatory -- three sections:
+  \textbf{Key Observations}
+  \begin{enumerate}
+      \item Observation with proof.
+  \end{enumerate}
+  \textbf{Solution Approach}
+  Algorithm step by step.
+  \textbf{Complexity Analysis}
+  \begin{itemize}
+      \item \textbf{Time}: $O(n \log n)$ --- reason.
+      \item \textbf{Space}: $O(n)$ --- reason.
+  \end{itemize}
+
+### validator.cpp   READ docs/testlib.md + START FROM templates/problem/validator.cpp
+
+  registerValidation(argc, argv)  MUST be first.
+  inf.readInt(min, max, "name") + readSpace + readEoln after each line + readEof last.
+  setTestCase(tc) in multitest loops. ensuref() for sum constraints.
+
+### checker.cpp   READ docs/testlib.md + START FROM templates/problem/checker.cpp
+
+PREFER a builtin checker. Copy from misc/Codeforces-Polygon-Template/testlib/checkers/:
+  yesno.cpp   YES/NO
+  wcmp.cpp    token sequence
+  ncmp.cpp    integer sequence
+  dcmp.cpp    floating point
+
+setName("...") MUST be first. registerTestlibCmd second.
+
+Single integer (most common):
+  #include "testlib.h"
+  int main(int argc, char *argv[]) {
+      setName("compare single integers");
+      registerTestlibCmd(argc, argv);
+      long long ja = ans.readLong();
+      long long pa = ouf.readLong(-4e18, 4e18, "answer");
+      if (ja != pa) quitf(_wa, "expected %lld, found %lld", ja, pa);
+      quitf(_ok, "answer is %lld", ja);
+  }
+
+### generators/generator.cpp   READ docs/testlib.md + START FROM templates/problem/generators/generator.cpp
+
+Start from template (has gen_* namespaces). Fill ONLY Generate_tests().
   void Generate_tests() {
       int n = opt<int>("n", 10);
-      // add problem-specific opts
-      cout << n << '\n';
-      // output using rnd.next() / gen_arrays::random / gen_graphs::tree etc.
+      cout << n << '
+';
+      for (int i = 0; i < n; i++)
+          cout << rnd.next(-1000000000, 1000000000) << " 
+"[i==n-1];
   }
-  Compile:  g++ -std=c++17 -O2 -o generator generators/generator.cpp
-  Run:      ./generator --n=1000 <seed> > test.txt
 
-script.txt -- FreeMarker. Tests 1..N_samples are hand-made (DO NOT include here).
-  Seed goes LAST as a plain integer. MUST hit MAX constraint values.
+### generators/script.txt   START FROM templates/problem/generators/script.txt
 
+Seed ${s} last. Tests 1..N_samples hand-made (not here). Hit MAX values.
   <#-- Executable name: generator -->
   <#list 1..2 as s>
       generator --n=1 ${s} > $
@@ -92,64 +142,56 @@ script.txt -- FreeMarker. Tests 1..N_samples are hand-made (DO NOT include here)
       generator --n=1000 ${s} > $
   </#list>
   <#list 11..26 as s>
-      generator --n=MAX_N ${s} > $
+      generator --n=200000 ${s} > $
   </#list>
-  generator --n=MAX_N --maxval=MAX_VAL 27 > $
-  generator --n=MAX_N --maxval=MAX_VAL 28 > $
+  generator --n=200000 --maxval=1000000000 27 > $
+  generator --n=200000 --maxval=1000000000 28 > $
 
-acc.cpp: Correct C++17. void Solve() + main loop. ios_base::sync_with_stdio(false).
-         No freopen. Use '\n' not endl. No warnings.
+### solutions/acc.cpp    START FROM templates/problem/solutions/acc.cpp
+### solutions/java.java  START FROM templates/problem/solutions/java.java
+### solutions/brute.cpp  START FROM templates/problem/solutions/brute.cpp
+### interactor.cpp       START FROM templates/problem/interactor.cpp  (interactive only)
 
-java.java: Class MUST be Main. BufferedReader + StreamTokenizer (not Scanner).
-           Same algorithm as acc.cpp. out.flush() at end.
+---
 
-brute.cpp: Naive/exhaustive. MUST match acc.cpp output on ALL inputs.
-           spec.brute_tag: "OK" if passes TL, "TL" if intentionally slow.
+## STEP 3 -- LINT
 
-## Interactive problems (read docs/interactive.md for full details)
+  python polygon_agent.py lint <name>
 
-Use --interactive flag on create. Adds interactor.cpp to required files.
+Scans statement LaTeX for forbidden commands and bare operators.
+Fix ALL issues. Do not skip this step.
 
-interactor.cpp rules:
-  registerInteraction(argc, argv) first.
-  inf = test file  ouf = contestant stream  tout = jury answer file.
-  Use endl (not backslash-n) to send to contestant -- it flushes.
-  Terminate with quitf(_ok/_wa/_fail).
+---
 
-acc.cpp for interactive: MUST flush after every output.
-  Use cout << x << endl  (NOT cout << x << backslash-n).
+## STEP 4 -- VERIFY
 
-java.java for interactive: Use BufferedReader (not StreamTokenizer).
-  out.println(x); out.flush();  after EVERY output.
+  python polygon_agent.py check <name>
 
-## spec.json fields
+Must print: OK: all N files complete.
 
-name, title, author, legend, input, output, notes, constraints, solution_idea,
-time_limit_ms, memory_limit_mb, interactive, multitest, samples,
-tags, brute_tag (OK or TL), statement_language
+---
 
-## Upload sequence (polygon_agent.py upload)
+## STEP 5 -- UPLOAD
 
-problem.create -> updateInfo (interactive flag) -> saveTags -> saveStatement ->
-saveFile x3 (+ interactor.cpp if interactive) -> setValidator + setChecker
-(+ setInteractor if interactive) ->
-saveSolution x3 (acc MA, java OK, brute OK/TL) ->
-saveTest xN (samples, useInStatements=True) ->
-saveScript -> commitChanges ->
-buildPackage (full=True, verify=True) -> poll until READY or FAILED
+  python polygon_agent.py upload <name>
+
+---
+
+## Docs (read before every file)
+
+  docs/latex.md        Polygon LaTeX rules + valid examples
+  docs/testlib.md      testlib API: validator/checker/generator
+  docs/interactive.md  Interactive problem guide
+  docs/polygon-api.md  API endpoints + solution tags
+  templates/problem/   Base templates for ALL files -- always start here
+
+---
 
 ## ECPC 2026 compliance
 
-- Statement: clear English + I/O + constraints + samples
-- Solutions: C++ MA + Java OK + brute OK/TL (all mandatory)
-- Generator + validator required (with usage instructions)
-- Tests 1-2 hand-made, 3-30 generated hitting MAX constraint values
-- Tutorial: Observations + Approach + Complexity (mandatory)
-- Tags set on Polygon. ICPC quality. Complete problems only.
-
-## Reference docs
-
-  docs/latex.md        Polygon LaTeX rules + forbidden commands
-  docs/testlib.md      testlib API quick reference
-  docs/interactive.md  Interactive problem guide
-  docs/polygon-api.md  API endpoints + solution tags + source types
+Statement + I/O + constraints + samples.
+acc.cpp MA + java.java OK + brute.cpp OK/TL -- all mandatory.
+Generator + validator required with usage instructions.
+Tests 1-N hand-made, N+1..30 generated hitting MAX values.
+Tutorial: Observations + Approach + Complexity -- mandatory.
+Tags set on Polygon. ICPC quality. Complete = points. Incomplete = 0.
