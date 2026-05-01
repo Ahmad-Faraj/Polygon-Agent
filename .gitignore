@@ -1,0 +1,23 @@
+# Credentials — never commit these
+.env
+.env.local
+
+# Generated problems — personal/private work, not part of the template
+problems/*/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Editor
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
